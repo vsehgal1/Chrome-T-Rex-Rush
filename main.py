@@ -1,10 +1,13 @@
 __author__ = "Shivam Shekhar"
 
+from pynput.keyboard import Key, Controller
 import os
 import sys
 import pygame
 import random
 from pygame import *
+
+keyboard = Controller()
 
 pygame.mixer.pre_init(44100, -16, 2, 2048) # fix audio delay 
 pygame.init()
@@ -18,6 +21,7 @@ white = (255,255,255)
 background_col = (235,235,235)
 
 high_score = 0
+x_val = 1
 
 screen = pygame.display.set_mode(scr_size)
 clock = pygame.time.Clock()
@@ -59,7 +63,7 @@ def load_sprite_sheet(
     sheet = pygame.image.load(fullname)
     sheet = sheet.convert()
 
-    sheet_rect = sheet.get_rect()
+    sheet_rect = sheet.get_rect(center=(nx, ny))
 
     sprites = []
 
@@ -112,6 +116,30 @@ def extractDigits(number):
             digits.append(0)
         digits.reverse()
         return digits
+
+class Marker():
+    def __init__(self,sizex=-1,sizey=-1):
+        self.images,self.rect = load_sprite_sheet('dino.png',5,1,sizex,sizey,-1)
+        self.images1,self.rect1 = load_sprite_sheet('dino_ducking.png',2,1,59,sizey,-1)
+        self.rect.bottom = int(0.98*height)
+        print(x_val)
+        self.rect.left = width/x_val
+        self.image = self.images[0]
+        self.index = 0
+        self.counter = 0
+        self.score = 0
+        self.isJumping = False
+        self.isDead = False
+        self.isDucking = False
+        self.isBlinking = False
+        self.movement = [0,0]
+        self.jumpSpeed = 11.5
+
+        self.stand_pos_width = self.rect.width
+        self.duck_pos_width = self.rect1.width
+
+    def draw(self):
+        screen.blit(self.image,self.rect)
 
 class Dino():
     def __init__(self,sizex=-1,sizey=-1):
@@ -346,6 +374,7 @@ def gameplay():
     gameOver = False
     gameQuit = False
     playerDino = Dino(44,47)
+    markerDino = Marker(44,47)
     new_ground = Ground(-1*gamespeed)
     scb = Scoreboard()
     highsc = Scoreboard(width*0.78)
@@ -399,11 +428,14 @@ def gameplay():
                             if not (playerDino.isJumping and playerDino.isDead):
                                 playerDino.isDucking = True
 
-                    if event.type == pygame.KEYUP:
-                        if event.key == pygame.K_DOWN:
-                            playerDino.isDucking = False
+                    # if event.type == pygame.KEYUP:
+                    #     if event.key == pygame.K_DOWN:
+                    #         playerDino.isDucking = False
             for c in cacti:
                 c.movement[0] = -1*gamespeed
+                if pygame.sprite.collide_rect(markerDino, c):
+                    keyboard.press(Key.space)
+                    keyboard.release(Key.space)
                 if pygame.sprite.collide_mask(playerDino,c):
                     playerDino.isDead = True
                     if pygame.mixer.get_init() != None:
@@ -454,7 +486,7 @@ def gameplay():
                 cacti.draw(screen)
                 # pteras.draw(screen)
                 playerDino.draw()
-
+                markerDino.draw()
                 pygame.display.update()
             clock.tick(FPS)
 
@@ -478,33 +510,15 @@ def gameplay():
                 gameQuit = True
                 gameOver = False
             else:
-                for event in pygame.event.get():
-                    if event.type == pygame.QUIT:
-                        gameQuit = True
-                        gameOver = False
-                    if event.type == pygame.KEYDOWN:
-                        if event.key == pygame.K_ESCAPE:
-                            gameQuit = True
-                            gameOver = False
+                gameQuit = True
+                gameOver = False
 
-                        if event.key == pygame.K_RETURN or event.key == pygame.K_SPACE:
-                            gameOver = False
-                            gameplay()
-            highsc.update(high_score)
-            if pygame.display.get_surface() != None:
-                disp_gameOver_msg(retbutton_image,gameover_image)
-                if high_score != 0:
-                    highsc.draw()
-                    screen.blit(HI_image,HI_rect)
-                pygame.display.update()
-            clock.tick(FPS)
 
     pygame.quit()
     quit()
 
-def main():
-    isGameQuit = introscreen()
-    if not isGameQuit:
-        gameplay()
-
-main()
+def main(dist_rule):
+    global x_val
+    x_val = int(dist_rule, 2)
+    gameplay()
+    return high_score

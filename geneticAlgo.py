@@ -48,6 +48,7 @@ class sga:
   
 
  ##Given some variables like distance, height
+ #testComment
   def rulematch(self,rules,close,obstacle):  
       ruleIndex = 0 #index of what rule we're on
       ruleFineIndex = 0 ##index of exactly what point in the chromosome we're on

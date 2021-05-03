@@ -368,6 +368,12 @@ def introscreen():
             gameStart = True
 
 def gameplay():
+    global screen
+    global clock
+    screen = pygame.display.set_mode(scr_size)
+    clock = pygame.time.Clock()
+    pygame.display.set_caption("T-Rex Rush")
+    pygame.display.init()
     global high_score
     gamespeed = 4
     startMenu = False
@@ -492,8 +498,7 @@ def gameplay():
 
             if playerDino.isDead:
                 gameOver = True
-                if playerDino.score > high_score:
-                    high_score = playerDino.score
+                high_score = playerDino.score
 
             # if counter%700 == 699:
             #     new_ground.speed -= 1
@@ -512,8 +517,9 @@ def gameplay():
             else:
                 gameQuit = True
                 gameOver = False
+            
 
-
+    pygame.display.quit()
     pygame.quit()
     quit()
 

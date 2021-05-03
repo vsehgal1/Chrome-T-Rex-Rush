@@ -2,7 +2,7 @@
 
 import pylab as pl
 import numpy as np
-
+import genetic
 class sga:
 
   def __init__(self, stringLength, popSize, nGens, pm, pc):
@@ -41,8 +41,12 @@ class sga:
   def fitFcn(self,pop):          # compute population fitness values   
      fitness = np.zeros(self.popSize) # initialize fitness values (1D array)
      index = 0
-     for chromosome in pop:
-         fitness[index] = runGame(chromosome) ################Run game here
+     for ind, chromosome in enumerate(pop):  
+         print('++++++++++++++++++++++++++')
+         print('Population: '+ str(ind))
+         print('++++++++++++++++++++++++++')                                  
+         t = map(str, chromosome.tolist())
+         fitness[index] = genetic.run_game(''.join(t)) ################Run game here
          index = index + 1
      return fitness
   
@@ -125,9 +129,12 @@ class sga:
         return pop
 
   def runGA(self):     # run simple genetic algorithme
-        fid=self.fid   # output file
+        fid=self.fid   # output file         
         for gen in range(self.nGens): # for each generation gen
-           # Compute fitness of the pop
+           print('++++++++++++++++++++++++++')
+           print('Generation: '+ str(gen))
+           print('++++++++++++++++++++++++++')
+           # Compute fitness of the pop         
            fitness = self.fitFcn(self.pop)  # measure fitness 
            # initialize new population
            newPop = np.zeros((self.popSize,self.stringLength),dtype = 'int64')

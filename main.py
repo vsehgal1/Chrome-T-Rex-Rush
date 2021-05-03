@@ -122,7 +122,7 @@ class Marker():
         self.images,self.rect = load_sprite_sheet('dino.png',5,1,sizex,sizey,-1)
         self.images1,self.rect1 = load_sprite_sheet('dino_ducking.png',2,1,59,sizey,-1)
         self.rect.bottom = int(0.98*height)
-        print(x_val)
+        print('Width from rule: '+ str(x_val))
         self.rect.left = width/x_val
         self.image = self.images[0]
         self.index = 0
